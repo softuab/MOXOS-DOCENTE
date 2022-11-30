@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="Tokens">
+    <select id="setGenerarToken" resultType="java.lang.Integer">
+        SELECT * FROM mi_registrar_token(#{expiry_date}, #{token}, #{id_docente},#{id_estado}); 
+    </select>
+    <resultMap id="idToken" type="org.fautapo.domain.Tokens">
+        <result property="id_password_reset_token"  column="id_password_reset_token" />
+        <result property="expiry_date"         column="expiry_date" />
+        <result property="token"           column="token" />
+        <result property="id_docente"         column="id_docente" />
+        <result property="id_estado"              column="id_estado" />
+    </resultMap>
+
+    <select id="getListartokendocente" resultMap="idToken">
+        select * from get_listar_token_docente(#{id_docente}, #{token}) as (id_password_reset_token integer,expiry_date timestamp,token text,id_docente integer,id_estado text );
+    </select>
+</mapper>

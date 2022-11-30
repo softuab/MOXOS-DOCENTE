@@ -1,0 +1,796 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="ProgramaAnalitico">
+
+    <resultMap id="map_listar_caratula" type="org.fautapo.domain.ProgramaAnalitico">
+        <result property="id_persona"   column="id_persona" />
+        <result property="dip"          column="dip" />
+        <result property="nombres"      column="nombres" />
+        <result property="paterno"      column="paterno" />
+        <result property="materno"      column="materno" />
+        <result property="id_docente"   column="id_docente" />
+        <result property="categoria"    column="categoria" />
+        <result property="facultad"     column="facultad" />
+        <result property="departamento" column="departamento" />
+        <result property="id_materia"   column="id_materia" />
+        <result property="sigla"        column="sigla" />
+        <result property="materia"      column="materia" />
+        <result property="hrs_teoricas" column="hrs_teoricas" />
+        <result property="hrs_practicas" column="hrs_practicas" />
+        <result property="hrs_periodo"  column="hrs_periodo" />
+        <result property="creditos"     column="creditos" />
+        <result property="id_tipo_materia"     column="id_tipo_materia" />
+        <result property="tipo"     column="tipo" />
+        <result property="ciclo_materia"     column="ciclo_materia" />
+        <result property="id_plan"     column="id_plan" />
+    </resultMap>
+    <select id="GetListarDatosCaratula" resultMap="map_listar_caratula">
+        SELECT 
+        d.id_persona::integer, 
+        p.dip::text, 
+        p.nombres::text, 
+        p.paterno::text, 
+        p.materno::text, 
+        p.celular::text,
+        p.correo::text,
+        d.id_docente::integer, 
+        d.categoria::text, 
+        f.facultad::text, 
+        fd.departamento::text, 
+        dct.gestion::text,
+        dct.periodo::text,
+        am.area::text,
+        mtm.tipo_materia::text,
+        m.id_materia::integer, 
+        m.sigla::text, 
+        m.materia::text, 
+        m.hrs_teoricas::integer, 
+        m.hrs_practicas::integer, 
+        m.hrs_periodo::integer, 
+        m.creditos,
+        m.id_tipo_materia::integer ,
+        am.tipo,
+        am.ciclo_materia,
+        mtp.id_plan
+        FROM 
+        docentes d inner join dct_asignaciones dct on d.id_docente = dct.id_docente
+        inner join personas p on p.id_persona = d.id_persona
+        inner join materias m on dct.id_materia = m.id_materia
+        inner join fcl_departamentos fd on  dct.id_departamento = fd.id_departamento
+        inner join facultades f on fd.id_facultad = f.id_facultad
+        inner join areas_materias am on am.id_materia = m.id_materia
+        inner join mtr_tipos_materias mtm on mtm.id_tipo_materia = m.id_tipo_materia
+        inner join tipos_asignaciones tp on tp.id_tipo_asignacion=dct.id_tipo_asignacion
+        inner join tipos_docentes td on td.id_tipo_docente = dct.id_tipo_docente
+        LEFT join persona_kardex pk on p.id_persona = pk.id_persona
+        inner join mtr_planes mtp on mtp.id_materia = m.id_materia
+        WHERE dct.id_asignacion =#{id_asignacion} and mtp.id_materia_ant = m.id_materia and  dct.id_tipo_evaluacion = 1 and am.id_estado = 'A';
+    </select>
+    <resultMap id="map_listar_materia_programa_analitico" type="org.fautapo.domain.ProgramaAnalitico">
+        <result property="facultad"   column="facultad" />
+        <result property="departamento"   column="departamento" />
+        <result property="id_persona"   column="id_persona" />
+        <result property="grado_academico"   column="grado_academico" />
+        <result property="tipo_materia"   column="tipo_materia" />
+        <result property="ciclo_materia"   column="ciclo_materia" />
+        <result property="nivel_academico"   column="nivel_academico" />
+        <result property="area"   column="area" />
+        <result property="materia"   column="materia" />
+        <result property="sigla"   column="sigla" />
+        <result property="clasificacion_asignatura"   column="clasificacion_asignatura" />
+        <result property="hrs_teoricas"   column="hrs_teoricas" />
+        <result property="hrs_practicas"   column="hrs_practicas" />
+        <result property="Turno"   column="Turno" />
+        <result property="gestion"   column="gestion" />
+        <result property="periodo"   column="periodo" />
+        <result property="nombres"   column="nombres" />
+        <result property="paterno"   column="paterno" />
+        <result property="materno"   column="materno" />
+        <result property="tipo_categoria"   column="tipo_categoria" />
+        <result property="tipo_docente"   column="tipo_docente" />
+        <result property="modalidad_deingreso"   column="modalidad_deingreso" />
+        <result property="creditos"   column="creditos" />
+        <result property="telefonocelular"   column="telefonocelular" />
+        <result property="numerodocumento"   column="numerodocumento" />
+        <result property="categoria"   column="categoria" />
+        <result property="correo"   column="correo" />
+        <result property="id_docente"   column="id_docente" />
+        <result property="id_materia"   column="id_materia" />
+        <result property="id_tipo_materia"   column="id_tipo_materia" />
+        <result property="id_plan"   column="id_plan" />
+        <result property="id_programa"   column="id_programa" />
+        <result property="id_departamento"   column="id_departamento" />
+        <result property="id_grupo"   column="id_grupo" />
+        <result property="id_mencion"   column="id_mencion" />
+        <result property="id_persona"   column="id_persona" />
+    </resultMap>
+    <select id="GetListarInformeProgramaAnalitico" resultMap="map_listar_materia_programa_analitico">
+        SELECT  f.facultad,
+        fd.departamento::text,
+        graca.grado_academico,
+        mtm.tipo_materia::text,
+        am.ciclo_materia,
+        mtp.nivel_academico,
+        am.area::text,
+        m.materia::text,  
+        m.sigla::text, 
+        am.tipo as clasificacion_asignatura,
+        m.hrs_teoricas::integer, 
+        m.hrs_practicas::integer, 
+        flc_pgr.Turno,
+        dct.gestion::text,
+        dct.periodo::text,
+        p.nombres::text, 
+        p.paterno::text, 
+        p.materno::text, 
+        upper(CASE
+        WHEN td.id_tipo_docente=3  OR td.id_tipo_docente = 4 THEN 'Docente honorífico'
+        WHEN td.id_tipo_docente=2  OR td.id_tipo_docente = 5 THEN 'Docente extraordinario'
+        WHEN td.id_tipo_docente=6  OR td.id_tipo_docente = 1 THEN 'Docente ordinario'
+        END) as tipo_categoria,
+        upper(td.tipo_docente) as tipo_docente,
+        CASE
+        WHEN td.id_tipo_docente=3  OR td.id_tipo_docente = 4 OR td.id_tipo_docente = 5 OR td.id_tipo_docente = 5  THEN 'DESIGNACION DIRECTA'
+        WHEN td.id_tipo_docente=2  THEN 'EXAMEN DE COMPETENCIA'
+        WHEN td.id_tipo_docente = 1 THEN 'CONCURSO DE MERITO'
+        END as modalidad_deingreso,
+        m.creditos,
+        telefonocelular,
+        numerodocumento,
+        p.correo::text,
+        d.categoria::text,  
+        d.id_docente::integer, 
+        m.id_materia::integer, 
+        m.id_tipo_materia::integer , 
+        mtp.id_plan,
+        flc_pgr.id_programa,
+        dct.id_departamento,
+        dct.id_grupo,
+        mtp.id_mencion,
+        p.id_persona
+        FROM 
+        docentes d inner join dct_asignaciones dct on d.id_docente = dct.id_docente
+        inner join personas p on p.id_persona = d.id_persona
+        inner join materias m on dct.id_materia = m.id_materia
+        inner join fcl_departamentos fd on  dct.id_departamento = fd.id_departamento
+        inner join facultades f on fd.id_facultad = f.id_facultad
+        inner join areas_materias am on am.id_materia = m.id_materia
+        inner join mtr_tipos_materias mtm on mtm.id_tipo_materia = m.id_tipo_materia
+        inner join tipos_asignaciones tp on tp.id_tipo_asignacion=dct.id_tipo_asignacion
+        inner join tipos_docentes td on td.id_tipo_docente = dct.id_tipo_docente
+        LEFT join persona_kardex pk on p.id_persona = pk.id_persona
+        inner join mtr_planes mtp on mtp.id_materia = m.id_materia
+        inner join fcl_departamentos_programas dep_pgr on  dct.id_departamento = dep_pgr.id_departamento
+        inner join fcl_programas flc_pgr on  flc_pgr.id_programa = dep_pgr.id_programa
+        inner join prg_grados_academicos pgraca on flc_pgr.id_programa = pgraca.id_programa
+        inner join grados_academicos graca on graca.id_grado_academico = pgraca.id_grado_academico 
+        WHERE dct.id_asignacion =#{id_asignacion} and pgraca.id_estado='A' and pgraca.id_plan=mtp.id_plan and mtp.id_materia_ant = m.id_materia and  dct.id_tipo_evaluacion = 1 and am.id_estado = 'A';
+    </select>
+    <resultMap id="map_listar_materia" type="org.fautapo.domain.ProgramaAnalitico">
+        <result property="id_persona"   column="id_persona" />
+        <result property="dip"          column="dip" />
+        <result property="nombres"      column="nombres" />
+        <result property="paterno"      column="paterno" />
+        <result property="materno"      column="materno" />
+        <result property="celular"      column="celular" />
+        <result property="correo"      column="correo" />
+        <result property="id_docente"   column="id_docente" />
+        <result property="categoria"    column="categoria" />
+        <result property="facultad"     column="facultad" />
+        <result property="departamento" column="departamento" />
+        <result property="gestion"   column="gestion" />
+        <result property="periodo"    column="periodo" />
+        <result property="area"     column="area" />
+        <result property="tipo_materia" column="tipo_materia" />
+        <result property="id_materia"   column="id_materia" />
+        <result property="sigla"        column="sigla" />
+        <result property="materia"      column="materia" />
+        <result property="hrs_teoricas" column="hrs_teoricas" />
+        <result property="hrs_practicas" column="hrs_practicas" />
+        <result property="hrs_periodo"  column="hrs_periodo" />
+        <result property="creditos"     column="creditos" />
+        <result property="id_tipo_materia"     column="id_tipo_materia" />
+        <result property="tipo"     column="tipo" />
+        <result property="ciclo_materia"     column="ciclo_materia" />
+        <result property="tipo_asignacion"     column="tipo_asignacion" />
+        <result property="tipo_categoria"     column="tipo_categoria" />
+        <result property="tipo_docente"     column="tipo_docente" />
+        <result property="telefonocelular"     column="telefonocelular" />
+        <result property="nivel_academico"     column="nivel_academico" />
+    </resultMap>
+     
+    <select id="GetListarMateriaProgramaAnalitico" resultMap="map_listar_materia">
+        SELECT 
+        d.id_persona::integer, 
+        p.dip::text, 
+        p.nombres::text, 
+        p.paterno::text, 
+        p.materno::text, 
+        p.celular::text,
+        p.correo::text,
+        d.id_docente::integer, 
+        d.categoria::text, 
+        f.facultad::text, 
+        fd.departamento::text, 
+        dct.gestion::text,
+        dct.periodo::text,
+        am.area::text,
+        mtm.tipo_materia::text,
+        m.id_materia::integer, 
+        m.sigla::text, 
+        m.materia::text, 
+        m.hrs_teoricas::integer, 
+        m.hrs_practicas::integer, 
+        m.hrs_periodo::integer, 
+        m.creditos,
+        m.id_tipo_materia::integer ,
+        am.tipo,
+        am.ciclo_materia,
+        upper(tp.tipo_asignacion) as tipo_asignacion,
+        upper(CASE
+        WHEN td.id_tipo_docente=3  OR td.id_tipo_docente = 4 THEN 'Docentes honoríficos'
+        WHEN td.id_tipo_docente=2  OR td.id_tipo_docente = 5 THEN 'Docentes extraordinarios'
+        WHEN td.id_tipo_docente=6  OR td.id_tipo_docente = 1 THEN 'Docentes ordinarios'
+        END) as tipo_categoria,
+        upper(td.tipo_docente) as tipo_docente,
+        telefonocelular,
+        mtp.nivel_academico
+        FROM 
+        docentes d inner join dct_asignaciones dct on d.id_docente = dct.id_docente
+        inner join personas p on p.id_persona = d.id_persona
+        inner join materias m on dct.id_materia = m.id_materia
+        inner join fcl_departamentos fd on  dct.id_departamento = fd.id_departamento
+        inner join facultades f on fd.id_facultad = f.id_facultad
+        inner join areas_materias am on am.id_materia = m.id_materia
+        inner join mtr_tipos_materias mtm on mtm.id_tipo_materia = m.id_tipo_materia
+        inner join tipos_asignaciones tp on tp.id_tipo_asignacion=dct.id_tipo_asignacion
+        inner join tipos_docentes td on td.id_tipo_docente = dct.id_tipo_docente
+        LEFT join persona_kardex pk on p.id_persona = pk.id_persona
+        inner join mtr_planes mtp on mtp.id_materia = m.id_materia
+        WHERE dct.id_asignacion =#{id_asignacion} and mtp.id_materia_ant = m.id_materia and  dct.id_tipo_evaluacion = 1 and am.id_estado = 'A';
+    </select>
+    <resultMap id="idListarPrerequisitoMateria" type="org.fautapo.domain.ProgramaAnalitico">
+        <result property="materia"      column="materia" />
+        <result property="sigla"        column="sigla" />
+        <result property="id_estado" column="id_estado" />
+        <result property="nivel_academico" column="nivel_academico" />
+    </resultMap>
+    <select id="GetListarPrerequisitoMateria" resultMap="idListarPrerequisitoMateria">
+        SELECT * FROM mi_dct_listar_materia_prerequisitos(#{id_plan}, #{id_materia},#{id_mencion}) 
+        AS (materia text, sigla text, id_estado did_estado, nivel_academico integer);
+       
+    </select>         
+    
+    <select id="PermitirRegistroPrograma" resultType="java.lang.Integer">
+        SELECT * FROM mi_dct_listar_materia_permitir_prg_analitico (#{id_materia}, #{id_plan}, #{id_grupo})
+    </select>
+    
+    <select id="ActualizarProgramaAnalitico" resultType="java.lang.Integer">
+        select * from mi_dct_update_programa_analitico(#{id_dct_programa_analitico},#{marco_referencial},#{justificacion},#{propositos},#{objetivo_desarrollador},#{objetivo_educativo},#{metodos_estrategias},#{recursos},#{sistema_evaluacion},#{id_estado},#{nro_resolucion},#{observacion},#{sistema_evaluacion_criterios});
+    </select>
+    
+    <select id="RegistrarProgromaAnalitico" resultType="java.lang.Integer">
+        select * from mi_dct_registrar_programa_analitico (#{id_docente},#{id_persona},#{id_asignacion},#{id_plan},#{id_grupo},#{id_materia},#{nro_resolucion},#{observacion},#{periodo},#{gestion},#{sistema_evaluacion_criterios});
+    </select>
+    
+    <select id="GetNivelAcademico" resultType="java.lang.Integer">
+        SELECT 
+        mtr_planes.nivel_academico
+        FROM 
+        public.mtr_planes
+        WHERE 
+        mtr_planes.id_materia = #{id_materia} AND mtr_planes.id_materia_ant = #{id_materia}  AND 
+        mtr_planes.id_plan = #{id_plan} AND 
+        mtr_planes.id_plan_ant = #{id_plan};
+    </select>
+    
+    <resultMap id="map_listar_programa_analitico" type="org.fautapo.domain.ProgramaAnalitico">
+       <result property="id_dct_programa_analitico"   column="id_dct_programa_analitico" />
+        <result property="id_docente"          column="id_docente" />
+        <result property="id_persona"      column="id_persona" />
+        <result property="id_asignacion"      column="id_asignacion" />
+        <result property="marco_referencial"      column="marco_referencial" />
+        <result property="justificacion"   column="justificacion" />
+        <result property="propositos"    column="propositos" />
+        <result property="objetivo_desarrollador"     column="objetivo_desarrollador" />
+        <result property="objetivo_educativo" column="objetivo_educativo" />
+        <result property="metodos_estrategias"   column="metodos_estrategias" />
+        <result property="recursos"        column="recursos" />
+        <result property="sistema_evaluacion"      column="sistema_evaluacion" />
+        <result property="id_estado" column="id_estado" />
+        <result property="fec_registro" column="fec_registro" />
+        <result property="fec_modificacion"  column="fec_modificacion" />
+        <result property="ult_usuario"     column="ult_usuario" />
+        <result property="id_plan"     column="id_plan" />
+        <result property="id_grupo"     column="id_grupo" />
+        <result property="id_materia"     column="id_materia" />
+        <result property="nro_resolucion"     column="nro_resolucion" />
+        <result property="observacion"     column="observacion" />
+        <result property="periodo"     column="periodo" />
+        <result property="gestion"     column="gestion" />
+        <result property="sistema_evaluacion_criterios"     column="sistema_evaluacion_criterios" />
+    </resultMap>      
+    <select id="GetListaProgramaanalitico" resultMap="map_listar_programa_analitico">
+        select * from dct_programa_analitico
+        where id_docente =  #{id_docente}
+        and id_materia =  #{id_materia}
+        and id_plan = #{id_plan} 
+        and id_grupo = #{id_grupo}
+        and periodo=#{periodo}
+        and gestion=#{gestion}; 
+    </select>
+    <select id="GetProgramaanaliticoDetalle" resultMap="map_listar_programa_analitico">
+        select * from dct_programa_analitico
+        where id_docente =  #{id_docente}
+        and id_materia =  #{id_materia}
+        and id_plan = #{id_plan} 
+        and id_grupo = #{id_grupo}
+        and periodo=#{periodo}
+        and gestion=#{gestion}; 
+    </select>
+    <resultMap id="map_caratula" type="org.fautapo.domain.ProgramaAnalitico">
+        <result property="facultad"          column="facultad" />
+        <result property="departamento"      column="departamento" />
+        <result property="materia"      column="materia" />
+        <result property="titulo"      column="titulo" />
+        <result property="nombres"   column="nombres" />
+        <result property="paterno"    column="paterno" />
+        <result property="materno"     column="materno" />
+        <result property="fec_modificacion" column="fec_modificacion" />
+    </resultMap>
+    
+    <select id="GetDatosCaratula" resultMap="map_caratula">
+        SELECT 
+        f.facultad, 
+        de.departamento, 
+        m.materia,   
+        pa.nro_resolucion AS titulo, 
+        p.nombres, 
+        p.paterno, 
+        p.materno, 
+        pa.fec_modificacion
+        FROM 
+        dct_programa_analitico pa, 
+        materias m, 
+        fcl_departamentos de, 
+        facultades f, 
+        docentes d, 
+        personas p
+        WHERE 
+        m.id_materia = pa.id_materia AND
+        de.id_departamento = m.id_departamento AND
+        f.id_facultad = de.id_facultad AND
+        d.id_docente = pa.id_docente AND
+        p.id_persona = d.id_persona and pa.id_dct_programa_analitico=#{id_dct_programa_analitico};
+    </select>
+        
+    <select id="GetProgramaanalitico" resultMap="map_listar_programa_analitico">
+        SELECT * FROM mi_dct_programa_analitico_por_id(#{id_dct_programa_analitico}) as
+        (
+        id_dct_programa_analitico int4,
+        id_docente dentero,
+        id_persona dentero,
+        id_asignacion dentero,
+        marco_referencial dtexto,
+        justificacion dtexto,
+        propositos dtexto,
+        objetivo_desarrollador dtexto,
+        objetivo_educativo dtexto,
+        metodos_estrategias dtexto,
+        recursos dtexto,
+        sistema_evaluacion dtexto,
+        id_estado did_estado,
+        fec_registro dfec_modificacion,
+        fec_modificacion dfec_modificacion,
+        ult_usuario did_usuario,
+        id_plan dtexto,
+        id_grupo dentero,
+        id_materia dentero,
+        nro_resolucion dtexto,
+        observacion dtexto,
+        periodo dentero,
+        gestion dentero,
+        sistema_evaluacion_criterios dtexto2
+        )
+    </select>
+    <!-- BIBLIOGRAFIA -->
+    <resultMap id="map_listarBibliografia" type="org.fautapo.domain.BiBliografia">
+        <result property="id_prg_a_bibliografia"   column="id_prg_a_bibliografia" />
+        <result property="autor"          column="autor" />
+        <result property="titulo"      column="titulo" />
+        <result property="lugar_edicion"      column="lugar_edicion" />
+        <result property="anio"      column="anio" />
+        <result property="paginas"      column="paginas" />
+        <result property="ubicacion"      column="ubicacion" />
+    </resultMap>
+    <select id="GetListaCopiarBibliografia" resultMap="map_listarBibliografia">
+        SELECT id_prg_a_bibliografia,autor,titulo,lugar_edicion,anio,paginas,ubicacion
+        FROM prg_a_bibliografia
+        WHERE id_estado='A' and id_dct_programa_analitico=#{id_dct_programa_analitico};
+    </select>
+    <select id="GetListarBibliografia" resultMap="map_listarBibliografia">
+        select * from mi_dct_listar_pgr_bibliografia(#{id_dct_programa_analitico}) as
+        (
+        id_prg_a_bibliografia integer,
+        autor dtexto,
+        titulo dtexto,
+        lugar_edicion dtexto,
+        anio dtexto,
+        paginas dtexto,
+        ubicacion dtexto
+        )
+    </select>    
+    <select id="GetBibliografia" resultMap="map_listarBibliografia">
+        select * from mi_dct_buscar_pgr_bibliografia(#{id_prg_a_bibliografia}) as
+        (
+        id_prg_a_bibliografia integer,
+        autor dtexto,
+        titulo dtexto,
+        lugar_edicion dtexto,
+        anio dtexto,
+        paginas dtexto,
+        ubicacion dtexto
+        )
+    </select> 
+    <select id="RegistrarBibliografia" resultType="java.lang.Integer">
+        select * from mi_dct_registrar_prg_a_bibliografia(#{id_dct_programa_analitico},#{autor},#{titulo},#{lugar_edicion},#{anio},#{paginas},#{ubicacion},#{ult_usuario});
+    </select>
+    <select id="ActualizarBibliografia" resultType="java.lang.Integer">
+        select * from mi_dct_actualizar_prg_a_bibliografia(#{id_prg_a_bibliografia},#{autor},#{titulo},#{lugar_edicion},#{anio},#{paginas},#{ubicacion},#{ult_usuario});
+    </select>
+    <select id="EliminarBibliografia" resultType="java.lang.Integer">
+        select * from mi_dct_Eliminar_prg_a_bibliografia(#{id_prg_a_bibliografia},#{ult_usuario});
+    </select>
+
+    <!--Fin Bibliografia -->
+    
+    
+    
+    <!-- Cronograma -->
+    <resultMap id="map_listarCronograma" type="org.fautapo.domain.Cronograma">
+        <result property="id_prg_a_cronograma"   column="id_prg_a_cronograma" />
+        <result property="dia_fecha"          column="dia_fecha" />
+        <result property="tipo_de_clase"      column="tipo_de_clase" />
+        <result property="titulo_de_clase"      column="titulo_de_clase" />
+        <result property="tiempo_a_emplear"      column="tiempo_a_emplear" />
+        <result property="observaciones"      column="observaciones" />
+    </resultMap>
+
+    <select id="GetListaCopiarCronograma" resultMap="map_listarCronograma">
+        SELECT id_prg_a_cronograma,dia_fecha,tipo_de_clase,titulo_de_clase,tiempo_a_emplear,observaciones
+        FROM prg_a_cronograma
+        WHERE id_estado='A' and id_dct_programa_analitico=#{id_dct_programa_analitico};
+    </select>
+    <select id="GetListarCronograma" resultMap="map_listarCronograma">
+        select * from mi_dct_listar_pgr_cronograma(#{id_dct_programa_analitico}) as
+        (
+        id_prg_a_cronograma integer,
+        dia_fecha dtexto,
+        tipo_de_clase dtexto,
+        titulo_de_clase dtexto,
+        tiempo_a_emplear dtexto,
+        observaciones dtexto
+        )
+    </select>    
+    <select id="GetCronograma" resultMap="map_listarCronograma">
+        select * from mi_dct_buscar_pgr_cronograma(#{id_prg_a_cronograma}) as
+        (
+        id_prg_a_cronograma integer,
+        dia_fecha dtexto,
+        tipo_de_clase dtexto,
+        titulo_de_clase dtexto,
+        tiempo_a_emplear dtexto,
+        observaciones dtexto
+        )
+    </select> 
+    <select id="RegistrarCronograma" resultType="java.lang.Integer">
+        select * from mi_dct_registrar_prg_a_cronograma(#{id_dct_programa_analitico},#{dia_fecha},#{tipo_de_clase},#{titulo_de_clase},#{tiempo_a_emplear},#{observaciones},#{ult_usuario});
+    </select>
+    <select id="ActualizarCronograma" resultType="java.lang.Integer">
+        select * from mi_dct_actualizar_prg_a_cronograma(#{id_prg_a_cronograma},#{dia_fecha},#{tipo_de_clase},#{titulo_de_clase},#{tiempo_a_emplear},#{observaciones},#{ult_usuario});
+    </select>
+    <select id="EliminarCronograma" resultType="java.lang.Integer">
+        select * from mi_dct_eliminar_prg_a_cronograma(#{id_prg_a_cronograma},#{ult_usuario});
+    </select>
+    
+    <!--Fin Cronograma -->
+
+    
+    <!-- Contenido -->
+    <resultMap id="map_listarContenidos" type="org.fautapo.domain.Contenidos">
+        <result property="id_prg_a_contenido"   column="id_prg_a_contenido" />
+        <result property="contenido"          column="contenido" />
+        <result property="objetivo_instructivo"      column="objetivo_instructivo" />
+        <result property="conocimientos"      column="conocimientos" />
+        <result property="habilidades"      column="habilidades" />
+        <result property="valores"      column="valores" />
+        <result property="mapa"      column="mapa" />
+    </resultMap>
+    <select id="GetListaCopiarContenidos" resultMap="map_listarContenidos">
+        SELECT id_prg_a_contenido,contenido,objetivo_instructivo,conocimientos,habilidades,valores,mapa
+        FROM prg_a_contenido
+        WHERE id_estado='A' and  id_dct_programa_analitico=#{id_dct_programa_analitico};     
+    </select>
+    <select id="GetListarContenido" resultMap="map_listarContenidos">
+        select * from mi_dct_listar_pgr_objetivo_instructivo(#{id_dct_programa_analitico}) as
+        (
+        id_prg_a_contenido integer,
+        contenido dtexto,
+        objetivo_instructivo dtexto,
+        conocimientos dtexto,
+        habilidades dtexto,
+        valores dtexto,
+        mapa dimagen
+        )
+    </select>    
+    <select id="GetContenido" resultMap="map_listarContenidos">
+        select * from mi_dct_buscar_pgr_objetivo_instructivo(#{id_prg_a_contenido}) as
+        (
+        id_prg_a_contenido integer,
+        contenido dtexto,
+        objetivo_instructivo dtexto,
+        conocimientos dtexto,
+        habilidades dtexto,
+        valores dtexto,
+        mapa dimagen
+        )
+    </select> 
+    <select id="RegistrarObjetivo_Instructivo_mapa" resultType="java.lang.Integer">
+        select * from mi_dct_registrar_prg_a_objetivo_instructivo_mapa(#{id_dct_programa_analitico}, #{contenido}, #{objetivo_instructivo}, #{conocimientos}, #{habilidades}, #{valores}, #{mapa}, #{ult_usuario});
+    </select>
+    <select id="RegistrarObjetivo_Instructivo" resultType="java.lang.Integer">
+        select * from mi_dct_registrar_prg_a_objetivo_instructivo(#{id_dct_programa_analitico}, #{contenido}, #{objetivo_instructivo}, #{conocimientos}, #{habilidades}, #{valores}, #{ult_usuario});
+    </select>
+    <update id="ActualizarMapaContenido">
+        UPDATE prg_a_contenido
+        SET mapa=#{mapa}
+        WHERE id_prg_a_contenido=#{id_prg_a_contenido};
+    </update>
+    <select id="ActualizarObjetivo_Instructivo" resultType="java.lang.Integer">
+        select * from mi_dct_actualizar_prg_a_objetivo_instructivo(#{id_prg_a_contenido}, #{contenido}, #{objetivo_instructivo}, #{conocimientos}, #{habilidades}, #{valores},#{ult_usuario});
+    </select>
+    <select id="EliminarObjetivo_Instructivo" resultType="java.lang.Integer">
+        select * from mi_dct_eliminar_prg_a_objetivo_instructivo(#{id_prg_a_contenido})
+    </select>
+    
+    <!--Fin Cronograma -->
+    
+    <!--formas de organizacion -->
+    <resultMap id="map_listarformasprogramaanalitico" type="org.fautapo.domain.FormasOrganizacion">
+        <result property="id_prg_a_formas"   column="id_prg_a_formas" />
+        <result property="sigla_formas"          column="sigla_formas" />
+        <result property="formas"      column="formas" /> 
+    </resultMap> 
+    <select id="GetListarformasProgramaAnalitico" resultMap="map_listarformasprogramaanalitico">
+        SELECT DISTINCT
+        pf.sigla_formas, 
+        pf.formas, 
+        pf.id_prg_a_formas
+        FROM prg_a_distribucion pd inner join prg_a_formas_distribucion pfa on pd.id_prg_a_distribucion = pfa.id_prg_a_distribucion
+        inner join prg_a_formas pf on pf.id_prg_a_formas = pfa.id_prg_a_formas
+        WHERE pd.id_dct_programa_analitico=#{id_dct_programa_analitico} AND pd.id_estado='A' AND pfa.id_estado='A';
+    </select>
+    <resultMap id="map_listarformas" type="org.fautapo.domain.FormasOrganizacion">
+        <result property="id_prg_a_formas"   column="id_prg_a_formas" />
+        <result property="sigla_formas"          column="sigla_formas" />
+        <result property="formas"      column="formas" />
+    </resultMap> 
+    <select id="GetListarformas" resultMap="map_listarformas">
+        select * from mi_dct_listar_pgr_formas_organizacion() as (id_prg_a_formas int4, sigla_formas dtexto, formas dtexto);
+    </select>
+    <resultMap id="map_listarformasfueraaulaProgramaAnalitico" type="org.fautapo.domain.FormasTrabajoAula">
+        <result property="id_prg_a_formas_trabajo_aula"   column="id_prg_a_formas_trabajo_aula" />
+        <result property="sigla_formas"          column="sigla_formas" />
+        <result property="formas"      column="formas" /> 
+    </resultMap>
+    <select id="GetListarformastrabajoaulaProgramaAnalitico" resultMap="map_listarformasfueraaulaProgramaAnalitico">
+        SELECT DISTINCT
+        prg_a_formas_trabajo_aula.id_prg_a_formas_trabajo_aula, 
+        prg_a_formas_trabajo_aula.sigla_formas, 
+        prg_a_formas_trabajo_aula.formas, 
+        prg_a_formas_trabajo_aula.id_estado
+        FROM 
+        public.prg_a_distribucion, 
+        public.prg_a_formas_trabajo_aula
+        WHERE 
+        prg_a_formas_trabajo_aula.id_prg_a_formas_trabajo_aula = prg_a_distribucion.id_prg_a_formas_trabajo_aula AND prg_a_distribucion.id_dct_programa_analitico=#{id_dct_programa_analitico};
+    </select>
+    <select id="GetListarFormasAulaPorPrograma" resultMap="map_listarformasfueraaulaProgramaAnalitico">
+        SELECT DISTINCT
+        pfa.id_prg_a_formas_trabajo_aula, 
+        pfa.sigla_formas, 
+        pfa.formas, 
+        pfa.id_estado
+        FROM 
+        prg_a_distribucion pd inner join prg_a_formas_aula_distribucion pda on pd.id_prg_a_distribucion=pda.id_prg_a_distribucion
+        inner join prg_a_formas_trabajo_aula pfa on pda.id_prg_a_formas_trabajo_aula=pfa.id_prg_a_formas_trabajo_aula
+        WHERE 
+        pd.id_dct_programa_analitico=#{id_dct_programa_analitico} AND pd.id_estado='A' and pda.id_estado='A';
+    </select>
+    <resultMap id="map_listarformasfueraaula" type="org.fautapo.domain.FormasTrabajoAula">
+        <result property="id_prg_a_formas_trabajo_aula"   column="id_prg_a_formas_trabajo_aula" />
+        <result property="sigla_formas"          column="sigla_formas" />
+        <result property="formas"      column="formas" />
+    </resultMap>
+    <select id="GetListarformastrabajoaula" resultMap="map_listarformasfueraaula">
+        select * from mi_dct_listar_pgr_formas_fuera_de_aula() as (id_prg_a_formas_trabajo_aula int4, sigla_formas dtexto, formas dtexto);
+    </select>
+    
+    <resultMap id="map_listarformascontenido" type="org.fautapo.domain.Contenidos">
+        <result property="id_prg_a_contenido"   column="id_prg_a_contenido" />
+        <result property="contenido"          column="contenido" />
+    </resultMap>
+  
+    <select id="GetListarformascontenido" resultMap="map_listarformascontenido">
+        select * from mi_dct_listar_pgr_formas_Contenido(#{id_dct_programa_analitico}) as (id_prg_a_contenido int4, contenido dtexto);
+    </select>
+    
+    <resultMap id="map_listarprg_a_distribucion" type="org.fautapo.domain.DistribucionTiempos">
+        <result property="id_prg_a_distribucion"   column="id_prg_a_distribucion" />
+        <result property="id_dct_programa_analitico"          column="id_dct_programa_analitico" />
+        <result property="id_prg_a_contenido"      column="id_prg_a_contenido" />
+        <result property="id_prg_a_formas_trabajo_aula"      column="id_prg_a_formas_trabajo_aula" />
+    </resultMap>
+    <select id="GetListaCopiarDistribucion" resultMap="map_listarprg_a_distribucion">
+        SELECT id_prg_a_distribucion,id_dct_programa_analitico,id_prg_a_contenido,id_prg_a_formas_trabajo_aula
+        FROM prg_a_distribucion
+        WHERE id_estado='A' and  id_dct_programa_analitico=#{id_dct_programa_analitico} and id_prg_a_contenido=#{id_prg_a_contenido};
+    </select>
+    <select id="GetListarDistribucionTiempos" resultMap="map_listarprg_a_distribucion">
+        SELECT pd.id_prg_a_distribucion, pd.id_dct_programa_analitico, pd.id_prg_a_contenido,  pd.id_prg_a_formas_trabajo_aula
+        FROM prg_a_distribucion pd inner join prg_a_contenido pc on pc.id_prg_a_contenido=pd.id_prg_a_contenido 
+        where pd.id_estado='A' and pc.id_estado='A' and pd.id_dct_programa_analitico =#{id_dct_programa_analitico}
+    </select>
+    <select id="GetDistribucionTiempos" resultMap="map_listarprg_a_distribucion">
+        SELECT id_prg_a_distribucion, id_dct_programa_analitico, id_prg_a_contenido,  id_prg_a_formas_trabajo_aula
+        FROM prg_a_distribucion
+        where id_estado='A' and id_prg_a_distribucion=#{id_prg_a_distribucion};
+    </select>
+    <select id="RegistrarDistribucionTiempos" resultType="java.lang.Integer">
+        select * from mi_dct_registrar_prg_a_distribuciontiempos(#{id_dct_programa_analitico}, #{id_prg_a_contenido}, #{id_prg_a_formas_trabajo_aula}, #{ult_usuario});
+    </select>
+    <select id="ActualizarDistribucionTiempos" resultType="java.lang.Integer">
+        select * from mi_dct_actualizar_prg_a_distribuciontiempos(#{id_prg_a_distribucion}, #{id_prg_a_contenido}, #{id_prg_a_formas_trabajo_aula} , #{ult_usuario});
+    </select>
+    <select id="EliminarDistribucionTiempos" resultType="java.lang.Integer">
+        select * from mi_dct_eliminar_prg_a_distribuciontiempos(#{id_prg_a_distribucion});
+    </select>
+    <resultMap id="map_detalle_formas_distribucion" type="org.fautapo.domain.FormasDistribucion">  
+        <result property="id_prg_a_formas"      column="id_prg_a_formas" />
+        <result property="horas"      column="horas" />
+    </resultMap> 
+    <select id="GetDetalleHorasFormasDistribucion" resultMap="map_detalle_formas_distribucion">
+        SELECT 
+        prg_a_formas_distribucion.id_prg_a_formas, 
+        prg_a_formas_distribucion.horas
+        FROM 
+        public.prg_a_formas_distribucion, 
+        public.prg_a_distribucion
+        WHERE 
+        prg_a_distribucion.id_prg_a_distribucion = prg_a_formas_distribucion.id_prg_a_distribucion AND
+        prg_a_distribucion.id_dct_programa_analitico = #{id_dct_programa_analitico};
+    </select>
+    <resultMap id="map_listarprg_a_formas_distribucion" type="org.fautapo.domain.FormasDistribucion">
+        <result property="id_prg_a_formas_distribucion"   column="id_prg_a_formas_distribucion" />
+        <result property="id_prg_a_distribucion"          column="id_prg_a_distribucion" />
+        <result property="id_prg_a_formas"      column="id_prg_a_formas" />
+        <result property="horas"      column="horas" />
+    </resultMap> 
+    <select id="GetListaCopiarFormasDistirbucion" resultMap="map_listarprg_a_formas_distribucion">
+        SELECT id_prg_a_formas_distribucion,id_prg_a_distribucion,id_prg_a_formas,horas
+        FROM prg_a_formas_distribucion
+        WHERE id_prg_a_distribucion=#{id_prg_a_distribucion};
+    </select>
+    <select id="GetListarFormasDistribucion" resultMap="map_listarprg_a_formas_distribucion">
+        SELECT id_prg_a_formas_distribucion,
+        id_prg_a_distribucion, id_prg_a_formas, horas FROM prg_a_formas_distribucion
+        WHERE id_prg_a_distribucion = #{id_prg_a_distribucion} AND  id_estado = 'A';
+    </select>
+    <select id="GetFormasDistribucion" resultMap="map_listarprg_a_formas_distribucion">
+        SELECT id_prg_a_formas_distribucion,
+        id_prg_a_distribucion, id_prg_a_formas, horas FROM prg_a_formas_distribucion
+        WHERE id_prg_a_formas_distribucion = #{id_prg_a_formas_distribucion} AND  id_estado = 'A';
+    </select>
+    <select id="RegistrarFormasDistribucion" resultType="java.lang.Integer">
+        select * from mi_dct_registrar_prg_a_formas_distribucion(#{id_prg_a_distribucion}, #{id_prg_a_formas}, #{horas}, #{ult_usuario});
+    </select>
+    <select id="ActualizarFormasDistribucion" resultType="java.lang.Integer">
+        select * from mi_dct_actualizar_prg_a_formas_distribucion(#{id_prg_a_formas_distribucion}, #{id_prg_a_formas}, #{horas}, #{ult_usuario});
+    </select>
+    <select id="EliminarFormasDistribucion" resultType="java.lang.Integer">
+        select * from mi_dct_eliminar_prg_a_formas_distribucion(#{id_prg_a_formas_distribucion});
+    </select>
+    <!--Fin formas de organizacion -->
+    <resultMap id="map_listarprogramas" type="org.fautapo.util.ListViewItem">
+        <result property="id"   column="id" />
+        <result property="value"          column="value" /> 
+    </resultMap> 
+    <select id="GetListarProgramasAnaliticosPorMateria" resultMap="map_listarprogramas">
+        SELECT 
+        dp.id_dct_programa_analitico  as id,
+        m.sigla||' - '||m.materia ||' '||  g.grupo||' ' || periodo ||'/'|| gestion as value
+        FROM  dct_programa_analitico as dp inner join  materias as m on  dp.id_materia=  m.id_materia inner join 
+        grupos as g on g.id_grupo = dp.id_grupo 
+        where dp.id_grupo=#{id_grupo} and dp.id_materia=#{id_materia} and dp.id_plan=#{id_plan}
+        ORDER BY gestion desc, periodo desc
+    </select>
+    <select id="getListaProfesionesProgramaAnalitico" resultType="java.lang.String">
+        SELECT pf.descripcion as formacion
+        FROM 
+        persona_kardex pk inner join persona_formacion_academica pf on pk.id_persona_kardex = pf.id_persona_kardex
+        inner join persona_nivelestudio pn on pn.id_nivelestudio = pf.id_nivelestudio
+        WHERE aprobado = true AND pk.id_persona=#{id_persona} AND pn.grado=#{grado};
+    </select>
+    <select id="VerMapaContenido" resultType="java.lang.String">
+        SELECT mapa
+        FROM prg_a_contenido
+        WHERE id_prg_a_contenido=#{id_prg_a_contenido};
+    </select>
+    <insert id="RegistrarFormasAulaDistribucion">
+        <selectKey keyProperty="id_prg_a_formas_aula_distribucion"
+                   resultType="int">
+            SELECT nextVal('prg_a_formas_aula_distribucio_id_prg_a_formas_aula_distribu_seq')
+        </selectKey>
+        INSERT INTO prg_a_formas_aula_distribucion( id_prg_a_formas_aula_distribucion,id_prg_a_distribucion, id_prg_a_formas_trabajo_aula, 
+        id_estado, ult_usuario)
+        VALUES ( #{id_prg_a_formas_aula_distribucion},#{id_prg_a_distribucion}, #{id_prg_a_formas_trabajo_aula},  'A', #{ult_usuario});
+    </insert>
+    <update id="ActualizarFormasAulaDistribucion">
+        UPDATE prg_a_formas_aula_distribucion
+        SET  
+        id_prg_a_formas_trabajo_aula=#{id_prg_a_formas_trabajo_aula},
+        id_estado='A',
+        ult_usuario=#{ult_usuario}
+        WHERE id_prg_a_formas_aula_distribucion=#{id_prg_a_formas_aula_distribucion};
+    </update>
+    <update id="EliminarFormasAulaDistribucion">
+        UPDATE prg_a_formas_aula_distribucion
+        SET
+        id_estado='X'
+        WHERE id_prg_a_formas_aula_distribucion=#{id_prg_a_formas_aula_distribucion};
+    </update>
+    <resultMap id="map_listarformasauladistribucion" type="org.fautapo.domain.FormasTrabajoAula">
+        <result property="id_prg_a_formas_aula_distribucion"   column="id_prg_a_formas_aula_distribucion" />
+        <result property="sigla_formas"          column="sigla_formas" /> 
+        <result property="formas"          column="formas" /> 
+    </resultMap>
+    <select id="GetListarFormasAulaDistribucion" resultMap="map_listarformasauladistribucion">
+        SELECT 
+        pfad.id_prg_a_formas_aula_distribucion, 
+        fa.sigla_formas, 
+        fa.formas
+        FROM 
+        public.prg_a_formas_aula_distribucion pfad inner join public.prg_a_formas_trabajo_aula fa on fa.id_prg_a_formas_trabajo_aula = pfad.id_prg_a_formas_trabajo_aula
+        WHERE 
+        pfad.id_prg_a_distribucion=#{id_prg_a_distribucion} and  pfad.id_estado='A';
+    </select>
+    <resultMap id="map_formasaulatrabajo" type="org.fautapo.domain.FormasAulaDistribucion">
+        <result property="id_prg_a_formas_aula_distribucion"   column="id_prg_a_formas_aula_distribucion" />
+        <result property="id_prg_a_distribucion"          column="id_prg_a_distribucion" /> 
+        <result property="id_prg_a_formas_trabajo_aula"          column="id_prg_a_formas_trabajo_aula" /> 
+        <result property="id_estado"          column="id_estado" />
+        <result property="fec_registro"          column="fec_registro" />
+        <result property="fec_modificacion"          column="fec_modificacion" />
+        <result property="ult_usuario"          column="ult_usuario" />
+    </resultMap>
+    <select id="GetFormasAulaTrabajoDistribucion" resultMap="map_formasaulatrabajo">
+        SELECT * FROM prg_a_formas_aula_distribucion 
+        WHERE id_prg_a_formas_aula_distribucion=#{id_prg_a_formas_aula_distribucion};
+    </select>
+    
+    <resultMap id="map_formasaulatrabajodistibucion" type="org.fautapo.domain.FormasTrabajoAula">
+        <result property="id_prg_a_formas_aula_distribucion"   column="id_prg_a_formas_aula_distribucion" />
+        <result property="sigla_formas"          column="sigla_formas" /> 
+        <result property="formas"          column="formas" /> 
+    </resultMap>
+    <select id="GetFormasAulaDistribucion" resultMap="map_formasaulatrabajodistibucion">
+        SELECT 
+        pfad.id_prg_a_formas_aula_distribucion, 
+        fa.sigla_formas, 
+        fa.formas
+        FROM 
+        public.prg_a_formas_aula_distribucion pfad inner join public.prg_a_formas_trabajo_aula fa on fa.id_prg_a_formas_trabajo_aula = pfad.id_prg_a_formas_trabajo_aula
+        WHERE   pfad.id_prg_a_formas_aula_distribucion=#{id_prg_a_formas_aula_distribucion} and  pfad.id_estado='A'; 
+    </select>
+</mapper>

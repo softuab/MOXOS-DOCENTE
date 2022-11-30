@@ -1,0 +1,26 @@
+#Profile li {
+    list-style:none;
+    margin: 0;
+    padding-bottom: -2ex;
+    font-size: 11px;
+}
+#Profile p
+{
+    margin-left:10px;
+    margin-right:10px;
+    margin-top:0px;
+    margin-bottom:0px;
+}
+#Profile img
+{
+    width: 150px;
+    height: 150px;
+}
+#Profile
+{
+    border-radius: 10px 10px 10px 10px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border: 1px solid #0000FF;
+    background-color:  #F2F2F2; 
+}
