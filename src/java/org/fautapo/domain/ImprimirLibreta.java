@@ -21,6 +21,7 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,32 +35,25 @@ import org.fautapo.util.Matematicas;
 public class ImprimirLibreta {
 
     private LibretasDocente libreta;
-    private HttpServletResponse response;
     private List<Libretas> parametros;
     private Font fonttitulotabla;
     private Font fontcontenttabla;
     private Font fontcontentreprobadotabla;
     private int NotaMinima;
 
-    public ImprimirLibreta(LibretasDocente libreta, List<Libretas> parametros, int notaminima, HttpServletResponse response) {
+    public ImprimirLibreta(LibretasDocente libreta, List<Libretas> parametros, int notaminima) {
         this.libreta = libreta;
-        this.response = response;
         this.parametros = parametros;
         this.NotaMinima = notaminima;
     }
 
-    public ImprimirLibreta(HttpServletResponse response) {
-        this.response = response;
-    }
 
-    public void CreateLibretaRegular() throws IOException {
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename=planillacalificaciones.pdf");
-        OutputStream out = response.getOutputStream();
+    public String CreateLibretaRegular() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             try {
                 Document document = new Document(PageSize.LEGAL.rotate(), 36, 36, 90, 36);
-                PdfWriter writer = PdfWriter.getInstance(document, out);
+                PdfWriter writer = PdfWriter.getInstance(document, baos);
 
                 // add header and footer
                 HeaderFooterPageEvent event = new HeaderFooterPageEvent(libreta);
@@ -171,22 +165,22 @@ public class ImprimirLibreta {
                 document.close();
 
             } catch (Exception ex) {
-                System.out.println(ex.getMessage());
                 ex.getMessage();
             }
         } finally {
-            out.close();
+            Base64.Encoder encoder = Base64.getEncoder();
+            String enconderBase64 = encoder.encodeToString(baos.toByteArray());
+            baos.close();
+            return enconderBase64;
         }
     }
 
-    public void CreateLibretaVerano() throws IOException {
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename=planillacalificaciones.pdf");
-        OutputStream out = response.getOutputStream();
+    public String CreateLibretaVerano() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             try {
                 Document document = new Document(PageSize.LEGAL.rotate(), 36, 36, 90, 36);
-                PdfWriter writer = PdfWriter.getInstance(document, out);
+                PdfWriter writer = PdfWriter.getInstance(document, baos);
 
                 // add header and footer
                 HeaderFooterPageEvent event = new HeaderFooterPageEvent(libreta);
@@ -291,22 +285,22 @@ public class ImprimirLibreta {
                 document.close();
 
             } catch (Exception ex) {
-                System.out.println(ex.getMessage());
                 ex.getMessage();
             }
         } finally {
-            out.close();
+            Base64.Encoder encoder = Base64.getEncoder();
+            String enconderBase64 = encoder.encodeToString(baos.toByteArray());
+            baos.close();
+            return enconderBase64;
         }
     }
 
-    public void CreateLibretaMesa() throws IOException {
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename=planillacalificaciones.pdf");
-        OutputStream out = response.getOutputStream();
+    public String CreateLibretaMesa() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             try {
                 Document document = new Document(PageSize.LEGAL.rotate(), 36, 36, 90, 36);
-                PdfWriter writer = PdfWriter.getInstance(document, out);
+                PdfWriter writer = PdfWriter.getInstance(document, baos);
 
                 // add header and footer
                 HeaderFooterPageEvent event = new HeaderFooterPageEvent(libreta);
@@ -326,7 +320,6 @@ public class ImprimirLibreta {
                 columnWidths.add(10f);
                 columnWidths.add(50f);
                 columnWidths.add(10f);
-                int columnas = parametros.stream().mapToInt(p -> p.getCantidad()).sum();
 
                 for (Libretas l : parametros) {
 
@@ -402,12 +395,15 @@ public class ImprimirLibreta {
                 document.close();
 
             } catch (Exception ex) {
-                System.out.println(ex.getMessage());
                 ex.getMessage();
             }
         } finally {
-            out.close();
+            Base64.Encoder encoder = Base64.getEncoder();
+            String enconderBase64 = encoder.encodeToString(baos.toByteArray());
+            baos.close();
+            return enconderBase64;
         }
+
     }
 
     private PdfPCell createCell(String content, int colspan, int rowspan, int border) {
@@ -687,7 +683,7 @@ public class ImprimirLibreta {
 
             } else {
                 table.addCell(createCell(String.valueOf(est.getNotas(4).getPonderacion()), 1, 1, PdfPCell.BOX));
-                table.addCell(createCell(String.valueOf(est.getNotas(3).getPonderacion()), 1, 1, PdfPCell.BOX)); 
+                table.addCell(createCell(String.valueOf(est.getNotas(3).getPonderacion()), 1, 1, PdfPCell.BOX));
                 table.addCell(createCell(String.valueOf(est.getNotas(5).getPonderacion()), 1, 1, PdfPCell.BOX));
                 table.addCell(createCell(String.valueOf(Matematicas.Redondear(est.getNotas(4).getPonderacion() + est.getNotas(3).getPonderacion() + est.getNotas(5).getPonderacion(), 2)), 1, 1, PdfPCell.BOX));
             }

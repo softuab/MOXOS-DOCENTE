@@ -6,6 +6,7 @@
 package org.fautapo.web.Docentes;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -27,18 +28,18 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Controller
 public class CalendarioController {
-
+    
     @Autowired
     private MiFacade mi;
     @Autowired
     private HttpServletRequest request;
-
+    
     private Clientes GetUsuario() {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         Clientes cliente = (Clientes) attr.getRequest().getSession().getAttribute("__sess_cliente");
         return cliente;
     }
-
+    
     @RequestMapping("/EntradaCalendariocalificacion.fautapo")
     public String Entrada(Model modelo) {
         Clientes cliente = this.GetUsuario();
@@ -54,9 +55,9 @@ public class CalendarioController {
         modelo.addAttribute("model", model);
         return "AdministrarCalendariocalificacion/Entrada";
     }
-
+    
     @RequestMapping(value = "/ListarDetalleCallendarios.fautapo", method = RequestMethod.POST)
-    public String ListarDetalleCallendarios(@ModelAttribute("model") @Validated ParametrosEntrada model, BindingResult result, Model modelo) {
+    public String listarDetalleCallendarios(@ModelAttribute("model") @Validated ParametrosEntrada model, BindingResult result, Model modelo) {
         Clientes cliente = this.GetUsuario();
         if (cliente == null) {
             modelo.addAttribute("mensaje", "Su sesion ha terminado. Vuelva a la pagina inicial e ingrese de nuevo.");
@@ -71,38 +72,34 @@ public class CalendarioController {
             return "AdministrarCalendariocalificacion/Entrada";
         }
         String sNombres = cliente.getNombres();
-        int iId_docente = cliente.getId_usuario();
-        List<String> Listaprograma = new ArrayList<String>();
-
+        int iIdDocente = cliente.getId_usuario();
+        
         Calendarios calendario = new Calendarios();
         calendario.setPeriodo(model.getPeriodo());
         calendario.setGestion(model.getGestion());
-        calendario.setId_docente(iId_docente);
+        calendario.setId_docente(iIdDocente);
         List<Calendarios> listacalenario = null;
         try {
             listacalenario = mi.getlistarCalendarioDocente(calendario);
-            for (Calendarios var : listacalenario) {
-                Listaprograma.add(var.getPrograma());
-            }
-            List<CalendarioDetalleModel> listadetalle = new ArrayList<CalendarioDetalleModel>();
-            for (Calendarios var : listacalenario) {
-                CalendarioDetalleModel obj = new CalendarioDetalleModel(var.getFecha_inicio(), var.getFecha_limite());
-                obj.setCarrera(var.getPrograma());
-                obj.setGestion(var.getGestion());
+            List<CalendarioDetalleModel> listadetalle = new ArrayList<>();
+            for (Calendarios detallecalendario : listacalenario) {
+                CalendarioDetalleModel obj = new CalendarioDetalleModel(detallecalendario.getFecha_inicio(), detallecalendario.getFecha_limite());
+                obj.setCarrera(detallecalendario.getPrograma());
+                obj.setGestion(detallecalendario.getGestion());
                 obj.setObservacion("");
-                obj.setPeriodo(var.getPeriodo());
-                obj.setTitulo(var.getTipo_evaluacion() + "-" + var.getTipo_nota() + " " + var.getNro_tipo_nota());
+                obj.setEsAmpliacion(detallecalendario.getTipo().equals("N")  ? false : true);
+                obj.setPeriodo(detallecalendario.getPeriodo());
+                obj.setTipoNota(detallecalendario.getTipo_nota() + " Nro. Nota de evaluacion " + detallecalendario.getNro_tipo_nota());
+                obj.setTitulo(detallecalendario.getTipo_evaluacion());
                 listadetalle.add(obj);
             }
-            List<String> listamostrar = Listaprograma.stream().distinct().collect(Collectors.toList());
-            modelo.addAttribute("ListaCarrera", listamostrar);
-            modelo.addAttribute("ListaCarreraDetalle", listadetalle);
+            List<CalendarioDetalleModel> listamostrar = listadetalle.stream().sorted(Comparator.comparing(CalendarioDetalleModel::getCarrera)).collect(Collectors.toList());
+            modelo.addAttribute("ListaCarreraDetalle", listamostrar);
             modelo.addAttribute("usuario", sNombres);
             modelo.addAttribute("gestion", model.getGestion());
             modelo.addAttribute("periodo", model.getPeriodo());
         } catch (Exception ex) {
         }
-
         return "AdministrarCalendariocalificacion/ListarDetalleCallendarios";
     }
 }

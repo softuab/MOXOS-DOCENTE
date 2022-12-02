@@ -29,11 +29,43 @@
         <result property="fecha_limite"    column="fecha_limite"/>
         <result property="gestion"    column="gestion"/>
         <result property="periodo"    column="periodo"/>
+        <result property="tipo"    column="tipo"/>
     </resultMap>
     <select id="getlistarCalendarioDocente" resultMap="CalendarioDocente">
-        select * from 
-        get_listar_Calendario_Docente(#{id_docente},#{gestion}, #{periodo})
-        as (facultad dtexto,programa dtexto,tipo_evaluacion dtexto,tipo_nota dtexto,nro_tipo_nota dentero,fecha_inicio dfecha2,fecha_limite dfecha2,gestion dentero,periodo dentero)
+        select 
+        fa.facultad,
+        fcp.programa,
+        te.tipo_evaluacion,
+        tn.tipo_nota,
+        ca.nro_tipo_nota,
+        ca.fecha_inicio,
+        ca.fecha_limite,
+        ca.gestion,ca.periodo, 'N' as tipo 
+        from calificacion_calendario ca
+        INNER JOIN fcl_programas fcp on fcp.id_programa=ca.id_programa
+        INNER JOIN facultades AS fa ON fa.id_facultad = fcp.id_facultad
+        INNER JOIN tipos_notas AS tn ON tn.id_tipo_nota = ca.id_tipo_nota
+        INNER JOIN tipos_evaluaciones AS te ON te.id_tipo_evaluacion = ca.id_tipo_evaluacion
+        where ca.gestion=#{gestion} and periodo=#{periodo} and fcp.id_programa in (select distinct fp.id_programa from dct_asignaciones dct 
+        inner join fcl_departamentos_programas fdp on fdp.id_departamento=dct.id_departamento
+        inner join fcl_programas fp on fp.id_programa=fdp.id_programa
+        where dct.id_docente = #{id_docente} and dct.gestion=#{gestion} and dct.periodo=#{periodo} )
+        union
+        SELECT 
+        fa.facultad,
+        fcp.programa,
+        te.tipo_evaluacion,
+        tn.tipo_nota,
+        ca.nro_tipo_nota,
+        ca.fecha_limite as fecha_inicio,
+        ca.fecha_limite,
+        ca.gestion,ca.periodo, 'A' as tipo
+        from calificacion_calendario_ampliada ca
+        INNER JOIN fcl_programas fcp on fcp.id_programa=ca.id_programa
+        INNER JOIN facultades AS fa ON fa.id_facultad = fcp.id_facultad
+        INNER JOIN tipos_notas AS tn ON tn.id_tipo_nota = ca.id_tipo_nota
+        INNER JOIN tipos_evaluaciones AS te ON te.id_tipo_evaluacion = ca.id_tipo_evaluacion
+        where ca.gestion=#{gestion} and periodo=#{periodo} and id_docente = #{id_docente}
     </select>
 
 </mapper>

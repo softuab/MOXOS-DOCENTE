@@ -23,8 +23,17 @@ public class Calendarios extends Departamentos {
     private int nro_tipo_nota;
     private Date fecha_inicio;
     private Date fecha_limite;
+    private String tipo;
+
+    public String getTipo() {
+        return tipo;
+    }
 
     /* JavaBeans Properties */
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
     public int getId_docente() {
         return id_docente;
     }

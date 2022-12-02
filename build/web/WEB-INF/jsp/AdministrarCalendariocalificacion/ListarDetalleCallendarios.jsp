@@ -30,7 +30,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="jumbotron bg-warning">
-                        
+
                         <h1 class="display-4"><img src="<c:url value='/imagenes/calendaricon.png'/>"/> Aviso, importante!</h1>
                         <hr class="my-4">
                         <p class="text-center"><b>Resolución Rectoral Nro 13-A/2017
@@ -50,24 +50,54 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="tile">
-                        <c:forEach items="${ListaCarreraDetalle}" var="value">
-                            <div class="row row-striped">
-                                <div class="col-3 text-center">
-                                    <h1 class="title"><span class="badge badge-secondary">${value.periodo}/${value.gestion}</span></h1>
-                                </div>
-                                <div class="col-9">
-                                    <h5 class="text-uppercase"><strong>${value.titulo}</strong></h5>
-                                    <ul class="list-inline">
-                                        <li class="list-inline-item"><i class="far fa-calendar-alt"></i> ${value.fechainicio}</li>
-                                            <c:if test="${value.fechainicio != value.fechafin}">
-                                            <li class="list-inline-item"><i class="far fa-calendar-alt"></i> ${value.fechafin}</li>
-                                            </c:if>	
-                                        <li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> ${value.carrera}</li>
-                                    </ul>
-                                    <p>${value.observacion}</p>
-                                </div>
-                            </div>
-                        </c:forEach>
+                        <div class="table-responsive-lg">
+                            <table class="table" aria-describedby="calendario">
+                                <thead> 
+                                    <tr>
+                                        <th class="text-center" scope="calendario" colspan="2">CALENDARIO DE CALIFICACION</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center" scope="Gestion">GESTION/PERIODO</th>
+                                        <th class="text-center" scope="Evaluacion">DETALLE</th>
+                                    </tr> 
+                                </thead>
+                                <tbody>
+                                    <c:set var = "aux" value = ""/>
+                                    <c:forEach items="${ListaCarreraDetalle}" var="value">
+                                        <c:choose>
+                                            <c:when test = "${value.carrera!=aux}">
+                                                <tr>
+                                                    <td colspan="2"><h5 class="text-uppercase"><strong>${value.carrera}</strong></h5></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <h1 class="title"><span class="badge badge-secondary">${value.periodo}/${value.gestion}</span></h1>
+                                                    </td>
+                                                    <td>
+                                                        <strong>Tipo Evaluacion: </strong> ${value.titulo}<br>
+                                                        <strong>Tipo nota: </strong> ${value.tipoNota}<br>
+                                                        <strong>Fecha: </strong> <i class="far fa-calendar-alt"></i><c:if test="${value.esAmpliacion}"> Ampliado hasta </c:if> ${value.fechainicio}  <c:if test="${value.fechainicio != value.fechafin}"><i class="far fa-calendar-alt"></i> ${value.fechafin}</c:if>
+                                                        </td>
+                                                    </tr>
+                                                <c:set var = "aux" value = "${value.carrera}"/>
+                                            </c:when>
+                                            <c:when test = "${value.carrera==aux}">
+                                                <tr>
+                                                    <td>
+                                                        <h1 class="title"><span class="badge badge-secondary">${value.periodo}/${value.gestion}</span></h1>
+                                                    </td>
+                                                    <td>
+                                                        <strong>Tipo Evaluacion: </strong> ${value.titulo}<br>
+                                                        <strong>Tipo nota: </strong> ${value.tipoNota}<br>
+                                                        <strong>Fecha: </strong> <i class="far fa-calendar-alt"></i><c:if test="${value.esAmpliacion}"> Ampliado hasta </c:if> ${value.fechainicio}  <c:if test="${value.fechainicio != value.fechafin}"><i class="far fa-calendar-alt"></i> ${value.fechafin}</c:if>
+                                                        </td>
+                                                    </tr>
+                                            </c:when>
+                                        </c:choose> 
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div> 
                     </div>
                 </div>
             </div>

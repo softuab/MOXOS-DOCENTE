@@ -24,10 +24,28 @@ public class CalendarioDetalleModel {
     private String titulo;
     private String carrera;
     private String observacion;
+    private String tipoNota;
+    private boolean esAmpliacion;
 
     public CalendarioDetalleModel(Date fecha_inicio, Date fecha_fin) {
         this.fecha_inicio = fecha_inicio;
         this.fecha_fin = fecha_fin;
+    }
+
+    public boolean isEsAmpliacion() {
+        return esAmpliacion;
+    }
+
+    public void setEsAmpliacion(boolean esAmpliacion) {
+        this.esAmpliacion = esAmpliacion;
+    }
+
+    public String getTipoNota() {
+        return tipoNota;
+    }
+
+    public void setTipoNota(String tipoNota) {
+        this.tipoNota = tipoNota;
     }
 
     public int getGestion() {
@@ -46,7 +64,7 @@ public class CalendarioDetalleModel {
         Calendar c = Calendar.getInstance();
         c.setTime(this.fecha_inicio);
         String dayOfWeek = c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, new Locale("ES")).toUpperCase();
-        fechainicio = dayOfWeek + " " + String.valueOf(c.get(Calendar.DATE)) + "/" + Mes(c.get(Calendar.MONTH));
+        fechainicio = dayOfWeek + " " + String.valueOf(c.get(Calendar.DAY_OF_MONTH)) + "/" + Mes(c.get(Calendar.MONTH) + 1);
         return fechainicio;
     }
 
@@ -54,7 +72,7 @@ public class CalendarioDetalleModel {
         Calendar c = Calendar.getInstance();
         c.setTime(this.fecha_fin);
         String dayOfWeek = c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, new Locale("ES")).toUpperCase();
-        fechafin = dayOfWeek + " " + String.valueOf(c.get(Calendar.DATE)) + "/" + Mes(c.get(Calendar.MONTH));
+        fechafin = dayOfWeek + " " + String.valueOf(c.get(Calendar.DAY_OF_MONTH)) + "/" + Mes(c.get(Calendar.MONTH) + 1);
         return fechafin;
     }
 

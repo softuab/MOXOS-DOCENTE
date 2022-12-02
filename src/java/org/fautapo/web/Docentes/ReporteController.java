@@ -13,9 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.fautapo.domain.Asignaciones;
 import org.fautapo.domain.Clientes;
-import org.fautapo.domain.Docentes;
 import org.fautapo.domain.Estudiantes;
-import org.fautapo.domain.Facultades;
 import org.fautapo.domain.ImprimirLibreta;
 import org.fautapo.domain.Instituciones;
 import org.fautapo.domain.LibretaEstudiante;
@@ -120,7 +118,7 @@ public class ReporteController {
     }
 
     @RequestMapping(value = "/docente/imprimirEvaluacionEstudiantes.fautapo", method = RequestMethod.GET)
-    public void imprimirEvaluacionEstudiantes(HttpServletResponse response) throws IOException {
+    public String imprimirEvaluacionEstudiantes(Model modelo) throws IOException {
         Clientes cliente = this.GetUsuario();
         if (cliente == null) {
             getException("Su sesion ha terminado. Vuelva a la pagina inicial e ingrese de nuevo.");
@@ -225,18 +223,24 @@ public class ReporteController {
             }
             libretadocente.Add(estudiantelibreta);
         }
+        String encoderPdf = "";
         if (sIdTipoEvaluacion.equals("1")) {
-            ImprimirLibreta libre = new ImprimirLibreta(libretadocente, parametroslibreta, notaminimaporprograma.getNota_minima(), response);
-            libre.CreateLibretaRegular();
+            ImprimirLibreta libre = new ImprimirLibreta(libretadocente, parametroslibreta, notaminimaporprograma.getNota_minima());
+            encoderPdf = "data:application/pdf;base64," + libre.CreateLibretaRegular();
         }
         if (sIdTipoEvaluacion.equals("3")) {
-            ImprimirLibreta libretaverano = new ImprimirLibreta(libretadocente, parametroslibreta, 51, response);
-            libretaverano.CreateLibretaVerano();
+            ImprimirLibreta libretaverano = new ImprimirLibreta(libretadocente, parametroslibreta, 51);
+            encoderPdf = "data:application/pdf;base64," + libretaverano.CreateLibretaVerano();
         }
         if (sIdTipoEvaluacion.equals("4")) {
-            ImprimirLibreta libre = new ImprimirLibreta(libretadocente, parametroslibreta, 51, response);
-            libre.CreateLibretaMesa();
+            ImprimirLibreta libre = new ImprimirLibreta(libretadocente, parametroslibreta, 51);
+            encoderPdf = "data:application/pdf;base64," + libre.CreateLibretaMesa();
         }
+        modelo.addAttribute("pdf", encoderPdf);
+        modelo.addAttribute("gestion", sGestion);
+        modelo.addAttribute("periodo", sPeriodo);
+        modelo.addAttribute("usuario", GetUsuario().getNombres());
+        return "reportesAcademicos/verNotasEvaluacionEstudiantesDocente/imprimirEvaluacionEstudiantes";
     }
 
     private Exception getException(String message) {
