@@ -259,7 +259,8 @@ public class LibretasController {
         String sIdTipoNotaS = request.getParameter("id_tipo_nota_s");
         String sNroNotaS = request.getParameter("nro_nota_s");
         int sIdTipoGrado = cliente.getInt(request, "id_tipo_grado");
-
+        List<Libretas> listaNotasPromedios = new ArrayList<>();
+        double notaMinimaSegundaInstacia = 0;
         //Nuevo
         int iIdAsignacion = cliente.getInt(request, "id_asignacion");
         //Buscamos la asignacion docente
@@ -348,48 +349,65 @@ public class LibretasController {
                 datosEstProg.setId_tipo_evaluacion(datosAsignacion.getId_tipo_evaluacion());
                 datosEstProg.setId_tipo_nota(datosTipoNota.getId_tipo_nota());
                 List<Libretas> lEstudiantes = this.mi.getEstBuscarEstudiantesProgramados(datosEstProg);
+                if (datosAsignacion.getId_fase() == 1) {
+                    listaNotasPromedios = mi.getEstListarNotasEstudianteLibretaSegunda(datosEstProg);
+                    Programas programa = new Programas();
+                    programa.setId_programa(Integer.parseInt(sIdPrograma));
+                    programa.setId_tipo_evaluacion(datosAsignacion.getId_tipo_evaluacion());
+                    programa.setPeriodo(datosAsignacion.getPeriodo());
+                    programa.setGestion(datosAsignacion.getGestion());
+                    List<Programas> listaNotasminimas = this.mi.getEstListarNotaMinimaporPrograma(programa);
+                    notaMinimaSegundaInstacia = listaNotasminimas.isEmpty() ? -1 : listaNotasminimas.stream().findFirst().get().getNota_minima();
+                    if (notaMinimaSegundaInstacia == -1) {
+                        modelo.addAttribute("mensaje", "No definio la nota minima de segunda instancia.");
+                        return "Aviso";
+                    }
+                }
                 Libretas libreta = null;
                 for (int i = 0; i < lEstudiantes.size(); i++) {
-                    libreta = (Libretas) lEstudiantes.get(i);
+                    libreta = lEstudiantes.get(i);
                     int iIdEstudiante = libreta.getId_estudiante();
                     List<Libretas> notasEstudiante = new ArrayList<>();
-                    //Obtenemos las notas de cada uno de los estudiantes por la FASE que ingreso
-                    for (int j = 1; j <= iCantidad; j++) {
-                        Libretas nota = null;
-                        Libretas notaResultado = null;
-                        int nroNota = j;
-                        List<Libretas> nominafiltrar = nominaNotasBaseDatos.stream().filter(p -> p.getNro_nota() == nroNota && p.getId_estudiante() == iIdEstudiante).collect(Collectors.toList());
-                        nota = nominafiltrar.isEmpty() ? null : nominafiltrar.stream().findFirst().get();
-                        int permitirModificar = 0;
-                        if (nota == null) {
-                            notaResultado = new Libretas();
-                            notaResultado.setNota(0);
-                            notaResultado.setNro_nota(nroNota);
-                            if (iIdTipoNota == 3 || iIdTipoNota == 5) {
-                                List<Libretas> notasPermitidas = listaCalendarioExcepcion.stream().filter(p -> p.getId_tipo_nota() == iIdTipoNota && p.getNro_tipo_nota() == nroNota).collect(Collectors.toList());
-                                permitirModificar = notasPermitidas.isEmpty() ? 0 : 1;
+                    if (permiteEvaluar(iIdEstudiante, buscarPrograma.getNota_aprobacion(), notaMinimaSegundaInstacia, listaNotasPromedios)) //Evaluamos si permite para evaluar 
+                    {
+                        for (int j = 1; j <= iCantidad; j++) {
+                            Libretas nota = null;
+                            Libretas notaResultado = null;
+                            int nroNota = j;
+                            List<Libretas> nominafiltrar = nominaNotasBaseDatos.stream().filter(p -> p.getNro_nota() == nroNota && p.getId_estudiante() == iIdEstudiante).collect(Collectors.toList());
+                            nota = nominafiltrar.isEmpty() ? null : nominafiltrar.stream().findFirst().get();
+                            int permitirModificar = 0;
+                            if (nota == null) {
+                                notaResultado = new Libretas();
+                                notaResultado.setNota(0);
+                                notaResultado.setNro_nota(nroNota);
+                                if (iIdTipoNota == 3 || iIdTipoNota == 5) {
+                                    List<Libretas> notasPermitidas = listaCalendarioExcepcion.stream().filter(p -> p.getId_tipo_nota() == iIdTipoNota && p.getNro_tipo_nota() == nroNota).collect(Collectors.toList());
+                                    permitirModificar = notasPermitidas.isEmpty() ? 0 : 1;
+                                } else {
+                                    permitirModificar = 1;
+                                }
+                                notaResultado.setPermitidomodificar(permitirModificar);
+                                notasEstudiante.add(notaResultado);
                             } else {
-                                permitirModificar = 1;
+                                notaResultado = new Libretas();
+                                notaResultado.setNota(nota.getNota());
+                                notaResultado.setNro_nota(nroNota);
+                                if (iIdTipoNota == 3 || iIdTipoNota == 5) {
+                                    List<Libretas> notasPermitidas = listaCalendarioExcepcion.stream().filter(p -> p.getId_tipo_nota() == iIdTipoNota && p.getNro_tipo_nota() == nroNota).collect(Collectors.toList());
+                                    permitirModificar = notasPermitidas.isEmpty() ? 0 : 1;
+                                } else {
+                                    permitirModificar = 1;
+                                }
+                                notaResultado.setPermitidomodificar(permitirModificar);
+                                notasEstudiante.add(notaResultado);
                             }
-                            notaResultado.setPermitidomodificar(permitirModificar);
-                            notasEstudiante.add(notaResultado);
-                        } else {
-                            notaResultado = new Libretas();
-                            notaResultado.setNota(nota.getNota());
-                            notaResultado.setNro_nota(nroNota);
-                            if (iIdTipoNota == 3 || iIdTipoNota == 5) {
-                                List<Libretas> notasPermitidas = listaCalendarioExcepcion.stream().filter(p -> p.getId_tipo_nota() == iIdTipoNota && p.getNro_tipo_nota()== nroNota).collect(Collectors.toList());
-                                permitirModificar = notasPermitidas.isEmpty() ? 0 : 1;
-                            } else {
-                                permitirModificar = 1;
-                            }
-                            notaResultado.setPermitidomodificar(permitirModificar);
-                            notasEstudiante.add(notaResultado);
                         }
+
+                        libreta.setNotas(notasEstudiante);
+                        lEstudiantes.set(i, libreta);
+                        modelo.addAttribute("numItems", notasEstudiante);
                     }
-                    libreta.setNotas(notasEstudiante);
-                    lEstudiantes.set(i, libreta);
-                    modelo.addAttribute("numItems", notasEstudiante);
                 }
                 PagedListHolder lNotas = new PagedListHolder(lEstudiantes);
                 lNotas.setPageSize(lNotas.getNrOfElements());
@@ -414,6 +432,22 @@ public class LibretasController {
         modelo.addAttribute("id_tipo_evaluacion", Integer.toString(datosAsignacion.getId_tipo_evaluacion()));
 
         return "administrarLibretas/ListarEstudiantesProgramados";
+    }
+
+    private boolean permiteEvaluar(int idEstudiante, double notaMinima, double minimaSegundaInstancia, List<Libretas> listaPromedios) {
+        if (!listaPromedios.isEmpty()) {
+            List<Libretas> notasPromedio = listaPromedios.stream().filter(p -> p.getId_estudiante() == idEstudiante).collect(Collectors.toList());
+            if (!notasPromedio.isEmpty()) {
+                double nota = notasPromedio.stream().mapToDouble(p -> p.getNota()).sum();
+                if (nota < notaMinima) {
+                    nota = notasPromedio.stream().filter(p -> p.getId_tipo_nota() != 5).mapToDouble(p -> p.getNota()).sum();
+                    return nota >= minimaSegundaInstancia;
+                }
+                return false;
+            }
+            return false;
+        }
+        return true;
     }
 
     @RequestMapping(value = "/RegistrarNotasEstudiantes.fautapo", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})

@@ -36,6 +36,8 @@ public interface LibretasDao {
 
     List getEstListarNotasEstudianteLibreta(Libretas libreta);
 
+    List<Libretas> getEstListarNotasEstudianteLibretaSegunda(Libretas libreta);
+
     List<Libretas> getEstListarNotasLibreta(Libretas libreta);
 
     List getEstListarNotasEstudiantePermitidoModificar(Libretas libreta);

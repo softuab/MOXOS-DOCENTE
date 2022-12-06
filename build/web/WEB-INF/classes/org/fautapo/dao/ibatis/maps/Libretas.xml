@@ -813,5 +813,30 @@
         AND gestion = #{gestion}
         AND id_tipo_nota= #{id_tipo_nota}
         AND periodo = #{periodo}
+        AND id_estado='A'
+    </select>
+    <select id="getEstListarNotasEstudianteLibretaSegunda" resultMap="notasEstudianteLibreta">
+        SELECT  el.id_estudiante, el.id_tipo_nota   ,case when sum(nota)=0 is null then 0 else ROUND(((sum(nota)/ge.cantidad)*ge.ponderacion)/100 ,2) end as nota
+        FROM 
+        est_libretas el inner join grp_evaluaciones ge on
+        ge.id_materia = el.id_materia AND
+        ge.id_grupo = el.id_grupo AND
+        ge.id_modelo_ahorro = el.id_modelo_ahorro AND
+        ge.id_tipo_nota = el.id_tipo_nota AND
+        ge.id_departamento = el.id_departamento AND
+        ge.id_tipo_evaluacion = el.id_tipo_evaluacion AND
+        ge.gestion = el.gestion AND
+        ge.periodo = el.periodo
+        WHERE el.id_materia = #{id_materia}
+        AND el.id_grupo = #{id_grupo}
+        AND el.id_tipo_evaluacion = #{id_tipo_evaluacion}
+        AND el.id_modelo_ahorro = #{id_modelo_ahorro}
+        AND el.gestion = #{gestion}
+        AND el.periodo = #{periodo}  
+        and el.id_estado='A'
+        AND ge.id_estado='A'
+        and ge.id_fase=0  
+        and nro_nota!=0
+        group by el.id_estudiante, el.id_tipo_nota, ge.cantidad ,ge.ponderacion
     </select>
 </mapper>

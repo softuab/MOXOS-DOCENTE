@@ -5279,11 +5279,15 @@ public class MiImpl implements MiFacade {
 
     @Override
     public List<Libretas> getCalendarioAcademicoExcepciones(Libretas libreta) {
-       return this.libretasDao.getCalendarioAcademicoExcepciones(libreta);
+        return this.libretasDao.getCalendarioAcademicoExcepciones(libreta);
     }
 
     @Override
     public List<Libretas> getDetalleNotaLibretaMateria(Libretas libreta) {
         return this.libretasDao.getDetalleNotaLibretaMateria(libreta);
+    }
+    @Override
+    public List<Libretas> getEstListarNotasEstudianteLibretaSegunda(Libretas libreta) {
+        return this.libretasDao.getEstListarNotasEstudianteLibretaSegunda(libreta);
     }
 }

@@ -385,4 +385,9 @@ public class SqlMapLibretasDao extends SqlSessionDaoSupport implements LibretasD
     public List<Libretas> getDetalleNotaLibretaMateria(Libretas libreta) throws DataAccessException {
         return getSqlSession().selectList("getDetalleNotaLibretaMateria", libreta);
     }
+
+    @Override
+    public List<Libretas> getEstListarNotasEstudianteLibretaSegunda(Libretas libreta) {
+         return getSqlSession().selectList("getEstListarNotasEstudianteLibretaSegunda", libreta);
+    }
 }

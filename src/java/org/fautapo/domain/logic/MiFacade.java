@@ -2503,8 +2503,10 @@ public interface MiFacade {
     ProgramaAnalitico GetProgramaanaliticoDetalle(ProgramaAnalitico model);
 
     Asignaciones getDctBuscarAsignacionDetalleDocente(Asignaciones asignacion);
-    
+
     List<Libretas> getCalendarioAcademicoExcepciones(Libretas libreta);
 
     List<Libretas> getDetalleNotaLibretaMateria(Libretas libreta);
+
+    List<Libretas> getEstListarNotasEstudianteLibretaSegunda(Libretas libreta);
 }

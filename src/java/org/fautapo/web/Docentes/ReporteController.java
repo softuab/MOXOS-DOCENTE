@@ -120,8 +120,10 @@ public class ReporteController {
     @RequestMapping(value = "/docente/imprimirEvaluacionEstudiantes.fautapo", method = RequestMethod.GET)
     public String imprimirEvaluacionEstudiantes(Model modelo) throws IOException {
         Clientes cliente = this.GetUsuario();
+        String modelParametro = "mensaje";
         if (cliente == null) {
-            getException("Su sesion ha terminado. Vuelva a la pagina inicial e ingrese de nuevo.");
+            modelo.addAttribute(modelParametro, "Su sesion ha terminado. Vuelva a la pagina inicial e ingrese de nuevo.");
+            return "Error";
         }
 
         String sIdAsignacion = request.getParameter("id_asignacion");
@@ -163,10 +165,12 @@ public class ReporteController {
         try {
             notaminimaporprograma = this.mi.getEstListarNotaMinimaporPrograma(programa).stream().findFirst().get();
         } catch (Exception ex) {
-            getException("No esta definido las notas minimas para imprimir las libretas");
+            modelo.addAttribute(modelParametro, "No esta definido las notas minimas para imprimir las libretas");
+            return "Error";
         }
         if (notaminimaporprograma == null && sIdTipoEvaluacion.equals("1")) {
-            getException("No esta definido las notas minimas para imprimir las libretas");
+            modelo.addAttribute(modelParametro, "No esta definido las notas minimas para imprimir las libretas");
+            return "Error";
         }
 
         Instituciones datosInstitucion = new Instituciones();
@@ -241,10 +245,6 @@ public class ReporteController {
         modelo.addAttribute("periodo", sPeriodo);
         modelo.addAttribute("usuario", GetUsuario().getNombres());
         return "reportesAcademicos/verNotasEvaluacionEstudiantesDocente/imprimirEvaluacionEstudiantes";
-    }
-
-    private Exception getException(String message) {
-        return new Exception(message);
     }
 
     @ExceptionHandler(value = Exception.class)
