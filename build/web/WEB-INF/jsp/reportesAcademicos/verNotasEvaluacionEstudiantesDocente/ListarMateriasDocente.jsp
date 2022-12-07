@@ -97,7 +97,7 @@
                                                         </c:forEach>
                                                     </c:if>
                                                     <td data-title="IMPRIMIR" class="text-center"> 
-                                                        <form name='forma<c:out value="${contador.count}"/>' method="GET" action="<c:url value='/docente/imprimirEvaluacionEstudiantes.fautapo'/>">
+                                                        <form name='forma<c:out value="${contador.count}"/>' method="GET" action="<c:url value='/docente/imprimirEvaluacion.fautapo'/>">
                                                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                                             <a class="btn btn-primary" href='javascript:document.forma<c:out value="${contador.count}"/>.submit();'><i class="fas fa-print"></i> </a>
                                                             <input type="hidden" name="nombres"          value="<c:out value='${usuario}'/>">

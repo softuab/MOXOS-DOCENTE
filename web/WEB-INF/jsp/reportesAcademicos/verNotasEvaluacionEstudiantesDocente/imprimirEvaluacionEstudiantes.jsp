@@ -31,9 +31,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div class="tile"> 
-                        <embed src="${pdf}" width="100%" height="600" 
-                               type="application/pdf">
+                    <div class="tile" id="pdfview">   
                     </div>
                 </div>
             </div>
@@ -42,6 +40,14 @@
         <script src="<c:url value='/Public/Js/jquery/popper.min.js'/>" ></script>
         <script src="<c:url value='/Public/Js/bootstrap.min.js'/>"></script>
         <script src="<c:url value='/Public/Js/main.js'/>"></script>
-        <script src="<c:url value='/Public/Js/plugins/pace.min.js'/>"></script>    
+        <script src="<c:url value='/Public/Js/plugins/pace.min.js'/>"></script>
+        <script>
+            var obj = document.createElement('object');
+            obj.style.width = '100%';
+            obj.style.height = '842pt';
+            obj.type = 'application/pdf';
+            obj.data = '${pdf}';
+            document.getElementById('pdfview').appendChild(obj);
+        </script>
     </body>
 </html>
