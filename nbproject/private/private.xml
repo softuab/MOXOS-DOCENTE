@@ -2,18 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/FNZABALETAA/Documents/NetBeansProjects/AppDocente/src/java/org/fautapo/dao/ibatis/maps/Programas.xml</file>
-            <file>file:/C:/Users/FNZABALETAA/Documents/NetBeansProjects/AppDocente/src/java/org/fautapo/dao/ibatis/maps/Libretas.xml</file>
-            <file>file:/C:/Users/FNZABALETAA/Documents/NetBeansProjects/AppDocente/web/WEB-INF/jsp/reportesAcademicos/verNotasEvaluacionEstudiantesDocente/imprimirEvaluacionEstudiantes.jsp</file>
-            <file>file:/C:/Users/FNZABALETAA/Documents/NetBeansProjects/AppDocente/src/java/org/fautapo/domain/logic/MiImpl.java</file>
-            <file>file:/C:/Users/FNZABALETAA/Documents/NetBeansProjects/AppDocente/src/java/org/fautapo/web/Docentes/LibretasController.java</file>
-            <file>file:/C:/Users/FNZABALETAA/Documents/NetBeansProjects/AppDocente/web/WEB-INF/jdbc.properties</file>
-            <file>file:/C:/Users/FNZABALETAA/Documents/NetBeansProjects/AppDocente/web/WEB-INF/jsp/reportesAcademicos/verNotasEvaluacionEstudiantesDocente/Error.jsp</file>
-            <file>file:/C:/Users/FNZABALETAA/Documents/NetBeansProjects/AppDocente/src/java/org/fautapo/dao/ibatis/maps/Asignaciones.xml</file>
-            <file>file:/C:/Users/FNZABALETAA/Documents/NetBeansProjects/AppDocente/src/java/org/fautapo/web/Docentes/ReporteController.java</file>
-            <file>file:/C:/Users/FNZABALETAA/Documents/NetBeansProjects/AppDocente/src/java/org/fautapo/domain/ImprimirLibreta.java</file>
-            <file>file:/C:/Users/FNZABALETAA/Documents/NetBeansProjects/AppDocente/web/WEB-INF/jsp/reportesAcademicos/verNotasEvaluacionEstudiantesDocente/ListarMateriasDocente.jsp</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
