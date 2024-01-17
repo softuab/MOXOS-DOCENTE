@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.moxos.uab.mybatis.dao.ClientesDao">
+
+    <resultMap id="cliente" type="com.moxos.uab.mybatis.entity.Clientes">
+        <result property="id_usuario" column="id_usuario"/>
+        <result property="nombres" column="nombres"/>
+        <result property="id_rol" column="id_rol"/>
+        <result property="rol" column="rol"/>
+        <result property="gestion" column="gestion"/>
+        <result property="periodo" column="periodo"/>
+        <result property="correo" column="correo"/>
+        <result property="celular" column="celular"/>
+        <result property="clave" column="clave"/>
+        <result property="bloqueado" column="bloqueado"/>
+        <result property="fecha_bloqueado" column="fecha_bloqueado"/>
+    </resultMap>
+    <select id="getBuscarConexionUsuario" resultType="com.moxos.uab.mybatis.entity.Clientes">
+        SELECT d.id_docente                                                   as id_usuario,
+               (p.nombres || (CASE WHEN p.paterno = '' THEN '' ELSE ' ' || p.paterno END) ||
+                (CASE WHEN p.materno = '' THEN '' ELSE ' ' || p.materno END)) as nombres,
+               8                                                              as id_rol,
+               'Docente'::text as rol,
+        _parametro('gestion', 'coimata')::dentero as gestion,
+        _parametro('periodo', 'coimata')::dentero as periodo,
+        p.correo::text as correo,
+        p.celular::text as celular
+        FROM personas p JOIN docentes d USING (id_persona)
+        WHERE p.id_estado = 'A'
+          AND d.id_estado = 'A'
+          AND upper (d.apodo) = upper (#{correo})
+    </select>
+    <select id="getBuscarConexionAntiguo" resultMap="cliente">
+        SELECT *
+        FROM buscar_conexion_2(#{apodo}, #{clave})
+            AS (id_usuario integer, nombres text, id_rol integer, rol text, gestion dentero, periodo dentero, correo
+        text,celular text);
+    </select>
+    <select id="getBuscarConexion" resultMap="cliente">
+        SELECT d.id_docente                                                   as id_usuario,
+               clave,
+               (p.nombres || (CASE WHEN p.paterno = '' THEN '' ELSE ' ' || p.paterno END) ||
+                (CASE WHEN p.materno = '' THEN '' ELSE ' ' || p.materno END)) as nombres,
+               8                                                              as id_rol,
+               'Docente'::text as rol,
+        _parametro('gestion', 'coimata')::dentero as gestion, _parametro('periodo', 'coimata')::dentero as periodo,
+        d.apodo::text as correo, p.celular::text as celular, bloqueado, fecha_bloqueado
+        FROM personas p JOIN docentes d USING (id_persona)
+        WHERE p.id_estado = 'A'
+          AND d.id_estado = 'A'
+          AND upper (d.apodo) = upper (#{apodo});
+    </select>
+    <resultMap id="cliente2FA" type="com.moxos.uab.mybatis.entity.Clientes">
+        <result property="id_usuario" column="id_usuario"/>
+        <result property="nombres" column="nombres"/>
+        <result property="id_rol" column="id_rol"/>
+        <result property="rol" column="rol"/>
+        <result property="gestion" column="gestion"/>
+        <result property="periodo" column="periodo"/>
+        <result property="correo" column="correo"/>
+        <result property="celular" column="celular"/>
+        <result property="clave" column="clave"/>
+        <result property="isUsing2FA" column="isUsing2FA"/>
+        <result property="secret" column="secret"/>
+    </resultMap>
+    <select id="getBuscarConexion2FA" resultMap="cliente2FA">
+        SELECT d.id_docente                                                   as id_usuario,
+               clave,
+               (p.nombres || (CASE WHEN p.paterno = '' THEN '' ELSE ' ' || p.paterno END) ||
+                (CASE WHEN p.materno = '' THEN '' ELSE ' ' || p.materno END)) as nombres,
+               8                                                              as id_rol,
+               'Docente'::text as rol,
+        _parametro('gestion', 'coimata')::dentero as gestion, _parametro('periodo', 'coimata')::dentero as periodo,
+        d.apodo::text as correo, p.celular::text as celular, activar2fa as isUsing2FA, secret
+        FROM personas p JOIN docentes d USING (id_persona)
+        WHERE p.id_estado = 'A'
+          AND d.id_estado = 'A'
+          AND upper (d.apodo) = upper (#{apodo});
+    </select>
+    <resultMap id="comprobarCliente" type="com.moxos.uab.mybatis.entity.Clientes">
+        <result property="id_usuario" column="id_usuario"/>
+        <result property="apodo" column="apodo"/>
+    </resultMap>
+
+    <select id="getComprobarUsuario" resultMap="comprobarCliente">
+        SELECT id_usuario, apodo
+        FROM comprobar_usuario(#{id_usuario}, #{clave});
+    </select>
+
+    <resultMap id="comprobarClienteSede" type="com.moxos.uab.mybatis.entity.Clientes">
+        <result property="id_usuario" column="id_usuario"/>
+        <result property="apodo" column="apodo"/>
+        <result property="id_almacen" column="id_almacen"/>
+    </resultMap>
+
+    <select id="getComprobarUsuSede" resultMap="comprobarClienteSede">
+        SELECT *
+        FROM comprobar_usu_sede(#{id_usuario}, #{clave}) AS (id_usuario integer, apodo dtexto2, id_almacen dentero2);
+    </select>
+
+    <select id="getFechaCadena" resultType="java.lang.String">
+        SELECT _fecha_cadena(#{filtro#{:: date);
+    </select>
+
+    <select id="getCadenaFecha" resultType="java.lang.String">
+        SELECT _cadena_fecha(#{filtro});
+    </select>
+
+    <!--  Permiso = IP del cliente  -->
+    <select id="getUsrBuscarIp" resultType="java.lang.Integer">
+        SELECT *
+        FROM usr_buscar_ip(#{id_usuario}, #{permiso}) LIMIT 1;
+    </select>
+
+    <update id="bloquearUsuario">
+        UPDATE docentes
+        SET bloqueado=#{bloqueado},
+            fecha_bloqueado=#{fecha_bloqueado}
+        WHERE id_docente = #{id_usuario};
+    </update>
+    <update id="updateUser2FA">
+        UPDATE docentes
+        SET activar2fa=#{isUsing2FA},
+            secret=#{secret}
+        WHERE id_docente = #{id_docente};
+    </update>
+    <select id="getSecret" resultType="java.lang.String">
+        SELECT secret from docentes
+        where id_docente=#{id_docente}
+    </select>
+    <resultMap id="map_usuarios_activos" type="com.moxos.uab.mybatis.entity.Docentes">
+        <result property="apodo" column="apodo"/>
+        <result property="activar2fa" column="activar2fa"/>
+    </resultMap>
+    <select id="getUsuario" resultMap="map_usuarios_activos">
+        SELECT apodo, activar2fa from docentes
+        where upper(apodo)=upper(#{apodo})  and id_estado='A'
+    </select>
+</mapper>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.moxos.uab.mybatis.dao.AuditoriaDao">
+
+    <insert id="guardarEvento">
+        INSERT INTO public.acciones_por_sesion(accion, ipaddres, ubicacion, id_session, id_usuario, tipo_usuario, ultima_session, app_name, macaddres, useragent)
+        VALUES (#{accion}, #{ipaddres}, #{ubicacion}, #{id_session}, #{id_usuario}, #{tipo_usuario}, #{ultima_session}, #{app_name}, #{macaddres}, #{useragent});
+    </insert>
+
+</mapper>

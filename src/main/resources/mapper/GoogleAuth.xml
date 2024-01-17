@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.moxos.uab.mybatis.dao.GoogleAuthDao">
+
+    <select id="getListaTokensGoogle" resultType="com.moxos.uab.mybatis.entity.GoogleAuth">
+        SELECT id_google_auth, id_docente, secret, fecha_solicitud
+        FROM public.google_auth;
+    </select>
+</mapper>
